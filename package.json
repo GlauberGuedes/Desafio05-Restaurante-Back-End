@@ -1,0 +1,29 @@
+{
+  "name": "Desafio05-Restaurante-Back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "knex": "^0.95.8",
+    "nodemon": "^2.0.12",
+    "pg": "^8.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunodsousa/Desafio05-Restaurante-Back-end.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brunodsousa/Desafio05-Restaurante-Back-end/issues"
+  },
+  "homepage": "https://github.com/brunodsousa/Desafio05-Restaurante-Back-end#readme"
+}
