@@ -49,7 +49,8 @@ async function cadastrarUsuario(req, res) {
       .returning("*");
 
     if (restauranteCadastrado.length === 0) {
-      return res.status(400).json("O restaurante não foi cadastrado.");
+      await knex('usuario').del().where({id: usuarioCadastrado[0].id});
+      return res.status(400).json("Erro no cadastro do restaurante.");
     }
 
     return res
