@@ -8,7 +8,7 @@ const verificarToken = require('./filtros/verificarToken');
 rotas.post('/usuarios', usuario.cadastrarUsuario);
 rotas.post('/login', login.loginUsuario);
 
-rotas.get('/categorias', produtos.preCadastroDeCategorias);
+rotas.get('/categorias', produtos.listaDeCategoria);
 
 rotas.use(verificarToken);
 

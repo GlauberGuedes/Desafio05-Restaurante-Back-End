@@ -1,6 +1,6 @@
 const knex = require("../conexao");
 
-async function preCadastroDeCategorias(req, res) {
+async function listaDeCategoria(req, res) {
     try {
         const categorias = await knex("categoria");
 
@@ -15,5 +15,5 @@ async function preCadastroDeCategorias(req, res) {
 }
 
 module.exports = {
-    preCadastroDeCategorias
+    listaDeCategoria
 }
