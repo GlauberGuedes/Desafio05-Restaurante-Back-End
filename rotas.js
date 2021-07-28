@@ -14,5 +14,6 @@ rotas.get('/categorias', categorias.listaDeCategoria);
 rotas.use(verificarToken);
 
 rotas.get('/produtos', produtos.listarProdutos);
+rotas.get('/produtos/:id', produtos.obterProduto);
 
 module.exports = rotas;
