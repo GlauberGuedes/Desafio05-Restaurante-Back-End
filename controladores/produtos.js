@@ -1,4 +1,5 @@
 const knex = require("../conexao"); 
+const validacaoCadastroProduto = require("../validacoes/validacaoCadastroProduto");
 
 async function listarProdutos(req, res) {
     const { restaurante } = req;
@@ -29,7 +30,41 @@ async function obterProduto(req, res) {
     }
 }
 
+async function cadastrarProduto(req, res) {
+    const { restaurante } = req;
+    const { nome, descricao, foto, preco, ativo, permiteObservacoes } = req.body;
+
+    try {
+        await validacaoCadastroProduto.validate(req.body);
+
+        const nomeProdutoCadastrado = await knex('produto').where({ restaurante_id: restaurante.id, nome });
+
+        if (nomeProdutoCadastrado.length > 0) {
+            return res.status(400).json('Já existe um produto com esse nome.');
+        }
+
+        const produtoCadastrado = await knex('produto').insert({
+            restaurante_id: restaurante.id,
+            nome,
+            descricao,
+            foto,
+            preco,
+            ativo,
+            permite_observacoes: permiteObservacoes
+        });
+
+        if (!produtoCadastrado) {
+            return res.status(400).json();
+        }
+
+        return res.status(200).json();
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 module.exports = {
     listarProdutos,
     obterProduto,
+    cadastrarProduto,
 }

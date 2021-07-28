@@ -15,5 +15,6 @@ rotas.use(verificarToken);
 
 rotas.get('/produtos', produtos.listarProdutos);
 rotas.get('/produtos/:id', produtos.obterProduto);
+rotas.post('/produtos', produtos.cadastrarProduto);
 
 module.exports = rotas;
