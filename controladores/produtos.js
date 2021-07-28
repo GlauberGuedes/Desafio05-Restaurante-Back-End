@@ -7,7 +7,7 @@ async function listarProdutos(req, res) {
     try {
         const produtos = await knex('produto').where({ restaurante_id: restaurante.id });
 
-        return res.status(200).json([produtos]);
+        return res.status(200).json(produtos);
     } catch (error) {
         return res.status(400).json(error.message);
     }
@@ -54,7 +54,42 @@ async function cadastrarProduto(req, res) {
         });
 
         if (!produtoCadastrado) {
-            return res.status(400).json();
+            return res.status(400).json('O produto não foi cadastrado.');
+        }
+
+        return res.status(200).json();
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
+async function atualizarProduto(req, res) {
+    const { restaurante } = req;
+    const { id } = req.params;
+    const { nome, descricao, foto, preco, ativo, permiteObservacoes } = req.body;
+
+    if (!nome && !descricao && !foto && !preco && !ativo && !permiteObservacoes) {
+        return res.status(404).json('Informe ao menos um campo para atualização.');
+    }
+
+    try {
+        const produtoEncontrado = await knex('produto').where({ id, restaurante_id: restaurante.id }).first();
+
+        if (!produtoEncontrado) {
+            return res.status(404).json('Produto não encontrado.');
+        }
+
+        const produtoAtualizado = await knex('produto').where({ id }).update({
+            nome, 
+            descricao,
+            foto,
+            preco,
+            ativo,
+            permite_observacoes: permiteObservacoes
+        });
+
+        if (!produtoAtualizado) {
+            return res.status(400).json('O produto não foi atualizado.');
         }
 
         return res.status(200).json();
@@ -67,4 +102,5 @@ module.exports = {
     listarProdutos,
     obterProduto,
     cadastrarProduto,
+    atualizarProduto,
 }
