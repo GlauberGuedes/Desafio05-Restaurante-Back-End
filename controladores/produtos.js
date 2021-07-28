@@ -1,9 +1,9 @@
 const knex = require("../conexao"); 
 
 async function listarProdutos(req, res) {
+    const { restaurante } = req;
+    
     try {
-        const { restaurante } = req;
-
         const produtos = await knex('produto').where({ restaurante_id: restaurante.id });
 
         return res.status(200).json([produtos]);
