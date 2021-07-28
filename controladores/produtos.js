@@ -6,7 +6,7 @@ async function listarProdutos(req, res) {
     try {
         const produtos = await knex('produto').where({ restaurante_id: restaurante.id });
 
-        return res.status(200).json([produtos]);
+        return res.status(200).json(produtos);
     } catch (error) {
         return res.status(400).json(error.message);
     }
