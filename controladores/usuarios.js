@@ -11,7 +11,7 @@ async function cadastrarUsuario(req, res) {
 
     await validacaoCadastroRestaurante.validate(restaurante);
 
-    const emailCadastrado = await knex("usuario").where("email", email);
+    const emailCadastrado = await knex("usuario").where("email", "ilike", email);
 
     if (emailCadastrado.length > 0) {
       return res.status(400).json("Este email já foi cadastrado.");
@@ -19,6 +19,7 @@ async function cadastrarUsuario(req, res) {
 
     const nomeRestauranteCadastrado = await knex("restaurante").where(
       "nome",
+      "ilike",
       restaurante.nome
     );
 
@@ -28,8 +29,10 @@ async function cadastrarUsuario(req, res) {
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
+    const emailFormatado = email.toLowerCase();
+    
     const usuarioCadastrado = await knex("usuario")
-      .insert({ nome, email, senha: senhaCriptografada })
+      .insert({ nome, email: emailFormatado, senha: senhaCriptografada })
       .returning("*");
 
     if (usuarioCadastrado.length === 0) {
