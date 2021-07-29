@@ -57,7 +57,7 @@ async function cadastrarProduto(req, res) {
             return res.status(400).json('O produto não foi cadastrado.');
         }
 
-        return res.status(200).json();
+        return res.status(200).json('Produto cadastrado com sucesso.');
     } catch (error) {
         return res.status(400).json(error.message);
     }
@@ -92,7 +92,7 @@ async function atualizarProduto(req, res) {
             return res.status(400).json('O produto não foi atualizado.');
         }
 
-        return res.status(200).json();
+        return res.status(200).json('Produto atualizado com sucesso.');
     } catch (error) {
         return res.status(400).json(error.message);
     }
