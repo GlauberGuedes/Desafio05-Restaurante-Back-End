@@ -10,7 +10,7 @@ async function loginUsuario(req, res) {
   try {
     await validacaoLoginUsuario.validate(req.body);
 
-    const usuario = await knex("usuario").where({ email }).first();
+    const usuario = await knex("usuario").where("email", "ilike", email).first();
 
     if (!usuario) {
       return res.status(404).json("O usuario não foi encontrado");
