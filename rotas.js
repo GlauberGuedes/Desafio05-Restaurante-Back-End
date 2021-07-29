@@ -19,5 +19,6 @@ rotas.post('/produtos', produtos.cadastrarProduto);
 rotas.put('/produtos/:id', produtos.atualizarProduto);
 rotas.delete('/produtos/:id', produtos.excluirProduto);
 rotas.post('/produtos/:id/ativar', produtos.ativarProduto);
+rotas.post('/produtos/:id/desativar', produtos.desativarProduto);
 
 module.exports = rotas;
