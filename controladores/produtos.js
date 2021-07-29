@@ -37,7 +37,7 @@ async function cadastrarProduto(req, res) {
     try {
         await validacaoCadastroProduto.validate(req.body);
 
-        const nomeProdutoCadastrado = await knex('produto').where({ restaurante_id: restaurante.id, nome });
+        const nomeProdutoCadastrado = await knex('produto').where({ restaurante_id: restaurante.id }).where('nome', 'ilike', nome);
 
         if (nomeProdutoCadastrado.length > 0) {
             return res.status(400).json('Já existe um produto com esse nome.');
