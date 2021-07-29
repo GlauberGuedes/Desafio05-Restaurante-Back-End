@@ -124,10 +124,36 @@ async function excluirProduto(req, res) {
     }
 }
 
+async function ativarProduto(req, res) {
+    const { restaurante } = req;
+    const { id } = req.params;
+
+    try {
+        const produto = await knex('produto').where({ id, restaurante_id: restaurante.id }).first();
+
+        if (!produto) {
+            return res.status(404).json('Produto não encontrado.');
+        }
+
+        const produtoAtivo = await knex('produto').where({ id }).update({
+            ativo: true
+        });
+
+        if (!produtoAtivo) {
+            return res.status(400).json('O produto não foi ativado.');
+        }
+
+        return res.status(200).json();
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 module.exports = {
     listarProdutos,
     obterProduto,
     cadastrarProduto,
     atualizarProduto,
     excluirProduto,
+    ativarProduto,
 }
