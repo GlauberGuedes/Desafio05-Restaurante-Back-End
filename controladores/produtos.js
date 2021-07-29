@@ -69,10 +69,6 @@ async function atualizarProduto(req, res) {
     const { id } = req.params;
     const { nome, descricao, foto, preco, ativo, permiteObservacoes } = req.body;
 
-    if (!nome && !descricao && !foto && !preco && !ativo && !permiteObservacoes) {
-        return res.status(404).json('Informe ao menos um campo para atualização.');
-    }
-
     try {
         await validacaoAtualizacaoProduto.validate(req.body);
 
@@ -101,9 +97,37 @@ async function atualizarProduto(req, res) {
     }
 }
 
+async function excluirProduto(req, res) {
+    const { restaurante } = req;
+    const { id } = req.params;
+
+    try {
+        const produto = await knex('produto').where({ id, restaurante_id: restaurante.id }).first();
+
+        if (!produto) {
+            return res.status(404).json('Produto não encontrado.');
+        }
+
+        if (produto.ativo) {
+            return res.status(400).json('Não é permitido a exclusão de produtos ativos.');
+        }
+
+        const produtoExcluido = await knex('produto').where({ id, restaurante_id: restaurante.id }).del();
+
+        if (!produtoExcluido) {
+            return res.status(400).json('O produto não foi excluído.');
+        }
+
+        return res.status(200).json();
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 module.exports = {
     listarProdutos,
     obterProduto,
     cadastrarProduto,
     atualizarProduto,
+    excluirProduto,
 }
