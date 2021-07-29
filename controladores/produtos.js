@@ -67,7 +67,7 @@ async function cadastrarProduto(req, res) {
 async function atualizarProduto(req, res) {
     const { restaurante } = req;
     const { id } = req.params;
-    const { nome, descricao, foto, preco, ativo, permiteObservacoes } = req.body;
+    const { nome, descricao, foto, preco, permiteObservacoes } = req.body;
 
     try {
         await validacaoAtualizacaoProduto.validate(req.body);
@@ -83,7 +83,6 @@ async function atualizarProduto(req, res) {
             descricao,
             foto,
             preco,
-            ativo,
             permite_observacoes: permiteObservacoes
         });
 
