@@ -5,7 +5,6 @@ const validacaoAtualizacaoProduto = yup.object().shape({
   descricao: yup.string().strict().max(80).trim(),
   foto: yup.string().strict().trim(),
   preco: yup.number(),
-  ativo: yup.boolean(),
   permiteObservacoes: yup.boolean()
 });
 
