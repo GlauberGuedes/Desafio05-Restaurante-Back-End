@@ -1,5 +1,6 @@
 const knex = require("../conexao"); 
 const validacaoCadastroProduto = require("../validacoes/validacaoCadastroProduto");
+const validacaoAtualizacaoProduto = require("../validacoes/validacaoAtualizacaoProduto");
 
 async function listarProdutos(req, res) {
     const { restaurante } = req;
@@ -73,6 +74,8 @@ async function atualizarProduto(req, res) {
     }
 
     try {
+        await validacaoAtualizacaoProduto.validate(req.body);
+
         const produtoEncontrado = await knex('produto').where({ id, restaurante_id: restaurante.id }).first();
 
         if (!produtoEncontrado) {
