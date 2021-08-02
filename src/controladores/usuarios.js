@@ -1,17 +1,43 @@
 const knex = require("../conexao");
-const validacaoCadastroUsuario = require("../validacoes/validacaoCadastroUsuario");
-const validacaoCadastroRestaurante = require("../validacoes/validacaoCadastroRestaurante");
+const validarUsuario = require("../validacoes/validacaoCadastroUsuario");
+const validarRestaurante = require("../validacoes/validacaoCadastroRestaurante");
 const bcrypt = require("bcrypt");
 
 async function cadastrarUsuario(req, res) {
   const { nome, email, senha, restaurante } = req.body;
 
+  const {
+    nome: nomeRestaurante,
+    idCategoria,
+    taxaEntrega,
+    tempoEntregaEmMinutos,
+    valorMinimoPedido,
+  } = restaurante;
+
   try {
-    await validacaoCadastroUsuario.validate({ nome, email, senha });
+    const erroValidacaoUsuario = validarUsuario(nome, email, senha);
 
-    await validacaoCadastroRestaurante.validate(restaurante);
+    if (erroValidacaoUsuario) {
+      return res.status(400).json(erroValidacaoUsuario);
+    }
 
-    const emailCadastrado = await knex("usuario").where("email", "ilike", email);
+    const erroValidacaoRestaurante = validarRestaurante(
+      nomeRestaurante,
+      idCategoria,
+      taxaEntrega,
+      tempoEntregaEmMinutos,
+      valorMinimoPedido
+    );
+
+    if (erroValidacaoRestaurante) {
+      return res.status(400).json(erroValidacaoRestaurante);
+    }
+
+    const emailCadastrado = await knex("usuario").where(
+      "email",
+      "ilike",
+      email
+    );
 
     if (emailCadastrado.length > 0) {
       return res.status(400).json("Este email já foi cadastrado.");
@@ -30,7 +56,7 @@ async function cadastrarUsuario(req, res) {
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
     const emailFormatado = email.toLowerCase();
-    
+
     const usuarioCadastrado = await knex("usuario")
       .insert({ nome, email: emailFormatado, senha: senhaCriptografada })
       .returning("*");
@@ -52,7 +78,7 @@ async function cadastrarUsuario(req, res) {
       .returning("*");
 
     if (restauranteCadastrado.length === 0) {
-      await knex('usuario').del().where({id: usuarioCadastrado[0].id});
+      await knex("usuario").del().where({ id: usuarioCadastrado[0].id });
       return res.status(400).json("Erro no cadastro do restaurante.");
     }
 

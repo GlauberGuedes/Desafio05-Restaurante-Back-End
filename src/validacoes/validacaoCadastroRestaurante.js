@@ -1,12 +1,25 @@
-const yup = require('./configuracao');
+function validarRestaurante(
+  nomeRestaurante,
+  idCategoria,
+  taxaEntrega,
+  tempoEntregaEmMinutos,
+  valorMinimoPedido
+) {
+  if (!nomeRestaurante.trim()) {
+    return "O campo 'nome' é obrigatório";
+  }
+  if (!idCategoria) {
+    return "O campo 'categoria' é obrigatório.";
+  }
+  if (!Number(taxaEntrega)) {
+    return "O campo 'taxa de entrega' é obrigatório e precisa ser um número inteiro.";
+  }
+  if (!Number(tempoEntregaEmMinutos)) {
+    return "O campo 'tempo estimado de entrega' é obrigatório e precisa ser um número.";
+  }
+  if (!Number(valorMinimoPedido)) {
+    return "O campo 'valor mínimo do pedido' é obrigatório e precisa ser um número inteiro.";
+  }
+}
 
-const validacaoCadastroRestaurante = yup.object().shape({
-  nome: yup.string().strict().required().trim(),
-  descricao: yup.string(),
-  idCategoria: yup.number().required().min(1),
-  taxaEntrega: yup.number().required(),
-  tempoEntregaEmMinutos: yup.number().required(),
-  valorMinimoPedido: yup.number().required()
-});
-
-module.exports = validacaoCadastroRestaurante;
+module.exports = validarRestaurante;

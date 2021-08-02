@@ -1,16 +1,22 @@
 const knex = require("../conexao");
 const bcrypt = require("bcrypt");
-const validacaoLoginUsuario = require("../validacoes/validacaoLoginUsuario");
+const validarLogin = require("../validacoes/validacaoLoginUsuario");
 const senhaHash = require("../senhaHash");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 async function loginUsuario(req, res) {
   const { email, senha } = req.body;
 
   try {
-    await validacaoLoginUsuario.validate(req.body);
+    const erroValidacaoLogin = validarLogin(email, senha);
 
-    const usuario = await knex("usuario").where("email", "ilike", email).first();
+    if (erroValidacaoLogin) {
+      return res.status(400).json(erroValidacaoLogin);
+    }
+
+    const usuario = await knex("usuario")
+      .where("email", "ilike", email)
+      .first();
 
     if (!usuario) {
       return res.status(404).json("O usuario não foi encontrado");
