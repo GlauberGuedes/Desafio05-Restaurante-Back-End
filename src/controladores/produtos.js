@@ -36,7 +36,11 @@ async function cadastrarProduto(req, res) {
     const { nome, descricao, foto, preco, ativo, permiteObservacoes } = req.body;
 
     try {
-        await validacaoCadastroProduto.validate(req.body);
+        const erroValidarCadastroProduto = validacaoCadastroProduto(nome, descricao, foto, preco, ativo, permiteObservacoes);
+
+        if (erroValidarCadastroProduto) {
+            return res.status(400).json(erroValidarCadastroProduto);
+        }
 
         const nomeProdutoCadastrado = await knex('produto').where({ restaurante_id: restaurante.id }).where('nome', 'ilike', nome);
 
@@ -70,12 +74,16 @@ async function atualizarProduto(req, res) {
     const { nome, descricao, foto, preco, permiteObservacoes } = req.body;
 
     try {
-        await validacaoAtualizacaoProduto.validate(req.body);
-
         const produtoEncontrado = await knex('produto').where({ id, restaurante_id: restaurante.id }).first();
 
         if (!produtoEncontrado) {
             return res.status(404).json('Produto não encontrado.');
+        }
+
+        const erroValidarAtualizacaoProduto = validacaoAtualizacaoProduto(nome, descricao, foto, preco, permiteObservacoes);
+
+        if (erroValidarAtualizacaoProduto) {
+            return res.status(400).json(erroValidarAtualizacaoProduto);
         }
 
         const produtoAtualizado = await knex('produto').where({ id }).update({
