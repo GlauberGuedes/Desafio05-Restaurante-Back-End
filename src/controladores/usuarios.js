@@ -9,6 +9,7 @@ async function cadastrarUsuario(req, res) {
   const {
     nome: nomeRestaurante,
     idCategoria,
+    descricao,
     taxaEntrega,
     tempoEntregaEmMinutos,
     valorMinimoPedido,
@@ -24,6 +25,7 @@ async function cadastrarUsuario(req, res) {
     const erroValidacaoRestaurante = validarRestaurante(
       nomeRestaurante,
       idCategoria,
+      descricao,
       taxaEntrega,
       tempoEntregaEmMinutos,
       valorMinimoPedido

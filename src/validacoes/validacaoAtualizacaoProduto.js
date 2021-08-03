@@ -13,6 +13,9 @@ function validacaoAtualizacaoProduto(
     if (nome.length > 50) {
       return "O campo 'nome' deve conter, no máximo, 50 caracteres.";
     }
+    if (!nome.trim()) {
+      return "O campo 'nome' não pode ser espaços vazios.";
+    }
   }
 
   if (descricao) {
@@ -31,7 +34,7 @@ function validacaoAtualizacaoProduto(
   }
 
   if (preco) {
-    if (typeof preco !== 'number') {
+    if (!Number(preco)) {
       return "O campo 'preco' precisa ser preenchido com um número.";
     }
   }
