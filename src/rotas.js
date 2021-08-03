@@ -13,6 +13,8 @@ rotas.get('/categorias', categorias.listaDeCategoria);
 
 rotas.use(verificarToken);
 
+rotas.put('/usuarios', usuario.atualizarUsuario);
+
 rotas.get('/produtos', produtos.listarProdutos);
 rotas.get('/produtos/:id', produtos.obterProduto);
 rotas.post('/produtos', produtos.cadastrarProduto);

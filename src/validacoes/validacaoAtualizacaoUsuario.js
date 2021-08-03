@@ -1,4 +1,4 @@
-function validarUsuario(
+function validarAtualizacaoUsuario(
   nome,
   email,
   senha,
@@ -40,17 +40,16 @@ function validarUsuario(
   if (!email.includes(".", indice)) {
     return "O campo 'email' está incorreto.";
   }
-  if (!senha) {
-    return "O campo 'senha' é obrigatório.";
-  }
-  if (typeof senha !== "string") {
-    return "O campo 'senha' precisa ser preenchido com um texto.";
-  }
-  if (!senha.trim()) {
-    return "O campo 'senha' é obrigatório.";
-  }
-  if (senha.length < 6) {
-    return "O campo 'senha' deve conter, no mínimo, 6 caracteres.";
+  if (senha) {
+    if (typeof senha !== "string") {
+      return "O campo 'senha' precisa ser preenchido com um texto.";
+    }
+    if (!senha.trim()) {
+      return "O campo 'senha' não pode ser espaços vazios.";
+    }
+    if (senha.length < 6) {
+      return "O campo 'senha' deve conter, no mínimo, 6 caracteres.";
+    }
   }
   if (!nomeRestaurante) {
     return "O campo 'nome do restaurante' é obrigatório.";
@@ -86,4 +85,4 @@ function validarUsuario(
   }
 }
 
-module.exports = validarUsuario;
+module.exports = validarAtualizacaoUsuario;
