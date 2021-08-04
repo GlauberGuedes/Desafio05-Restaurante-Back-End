@@ -24,7 +24,7 @@ Recebe todas as informações de cadastro do usuário e do restaurante, verifica
 
 Exemplo de como enviar os dados para o cadastro:
 
-``{
+```{
   "nome": "Nome Do Usuário",
   "email": "email.do.usuario@provedor.com",
   "senha": "abc123",
@@ -36,7 +36,11 @@ Exemplo de como enviar os dados para o cadastro:
     "tempoEntregaEmMinutos": 30,
     "valorMinimoPedido": 1500
   }
-}``
+}```
+
+function sayHello() {
+      return 'hi!';
+    }
 
 ### `PUT` `/usuarios`
 
