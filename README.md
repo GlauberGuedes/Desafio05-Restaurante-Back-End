@@ -36,11 +36,8 @@ Exemplo de como enviar os dados para o cadastro:
     "tempoEntregaEmMinutos": 30,
     "valorMinimoPedido": 1500
   }
-}```
-
-function sayHello() {
-      return 'hi!';
-    }
+}
+```
 
 ### `PUT` `/usuarios`
 
@@ -52,7 +49,7 @@ Recebe todas as informações do usuário e do restaurante, além da imagem do p
 
 Exemplo de como enviar os dados para a atualização de cadastro:
 
-``{
+```{
   "nome": "Nome Do Usuário",
   "email": "email.do.usuario@provedor.com",
   "senha": "abc123",
@@ -65,7 +62,8 @@ Exemplo de como enviar os dados para a atualização de cadastro:
     "valorMinimoPedido": 1500,
     "imagem": "imagem em base64"
   }
-}``
+}
+```
 
 ### `POST` `/login`
 
@@ -73,10 +71,11 @@ Recebe as informações de login (email e senha), verificará se o email existe 
 
 Exemplo de como enviar os dados para o login:
 
-``{
+```{
   "email": "dono.do@restaurante.com",
   "senha": "scadulfax"
-}``
+}
+```
 
 ### `GET` `/produtos`
 
@@ -96,9 +95,10 @@ Endpoint para cadastrar um novo produto. Recebe as informações do produto, val
 
 Exemplo de como enviar os dados para o cadastro de produto:
 
-``{
+```{
   "nome": "Pizza de frango com catupiry",
   "descricao": "Pizza tamanho grande, 8 pedaços",
   "preco": 7000,
   "permiteObservacoes": false
-}``
+}
+```
