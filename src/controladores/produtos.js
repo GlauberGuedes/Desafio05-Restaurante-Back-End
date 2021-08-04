@@ -1,4 +1,5 @@
 const knex = require("../conexao"); 
+const supabase = require('../supabase');
 const validacaoCadastroProduto = require("../validacoes/validacaoCadastroProduto");
 const validacaoAtualizacaoProduto = require("../validacoes/validacaoAtualizacaoProduto");
 
@@ -34,6 +35,7 @@ async function obterProduto(req, res) {
 async function cadastrarProduto(req, res) {
     const { restaurante } = req;
     const { nome, descricao, imagem, preco, ativo, permiteObservacoes } = req.body;
+    let urlImagem;
 
     try {
         const erroValidarCadastroProduto = validacaoCadastroProduto(nome, descricao, imagem, preco, ativo, permiteObservacoes);
@@ -48,11 +50,33 @@ async function cadastrarProduto(req, res) {
             return res.status(400).json('Já existe um produto com esse nome.');
         }
 
+        if (imagem) {
+            const buffer = Buffer.from(imagem, 'base64');
+
+            const { error } = await supabase
+                .storage
+                .from(process.env.SUPABASE_BUCKET)
+                .upload(`restaurante${restaurante.id}/${nome.replace(/\s/g, '')}`, buffer);
+            if (error) {
+                return res.status(400).json('A imagem do produto não pôde ser cadastrada.');
+            }
+
+            const { publicURL, error: errorPublicUrl } = supabase
+                .storage 
+                .from(process.env.SUPABASE_BUCKET)
+                .getPublicUrl(`restaurante${restaurante.id}/${nome.replace(/\s/g, '')}`);
+            if (errorPublicUrl) {
+                return res.status(400).json(errorPublicUrl.message);
+            }
+
+            urlImagem = publicURL;
+        }
+
         const produtoCadastrado = await knex('produto').insert({
             restaurante_id: restaurante.id,
             nome,
             descricao,
-            imagem,
+            imagem: urlImagem,
             preco,
             ativo,
             permite_observacoes: permiteObservacoes
