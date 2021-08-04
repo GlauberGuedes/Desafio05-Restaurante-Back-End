@@ -33,10 +33,10 @@ async function obterProduto(req, res) {
 
 async function cadastrarProduto(req, res) {
     const { restaurante } = req;
-    const { nome, descricao, foto, preco, ativo, permiteObservacoes } = req.body;
+    const { nome, descricao, imagem, preco, ativo, permiteObservacoes } = req.body;
 
     try {
-        const erroValidarCadastroProduto = validacaoCadastroProduto(nome, descricao, foto, preco, ativo, permiteObservacoes);
+        const erroValidarCadastroProduto = validacaoCadastroProduto(nome, descricao, imagem, preco, ativo, permiteObservacoes);
 
         if (erroValidarCadastroProduto) {
             return res.status(400).json(erroValidarCadastroProduto);
@@ -52,7 +52,7 @@ async function cadastrarProduto(req, res) {
             restaurante_id: restaurante.id,
             nome,
             descricao,
-            foto,
+            imagem,
             preco,
             ativo,
             permite_observacoes: permiteObservacoes
@@ -71,7 +71,7 @@ async function cadastrarProduto(req, res) {
 async function atualizarProduto(req, res) {
     const { restaurante } = req;
     const { id } = req.params;
-    const { nome, descricao, foto, preco, permiteObservacoes } = req.body;
+    const { nome, descricao, imagem, preco, permiteObservacoes } = req.body;
 
     try {
         const produtoEncontrado = await knex('produto').where({ id, restaurante_id: restaurante.id }).first();
@@ -80,7 +80,7 @@ async function atualizarProduto(req, res) {
             return res.status(404).json('Produto não encontrado.');
         }
 
-        const erroValidarAtualizacaoProduto = validacaoAtualizacaoProduto(nome, descricao, foto, preco, permiteObservacoes);
+        const erroValidarAtualizacaoProduto = validacaoAtualizacaoProduto(nome, descricao, imagem, preco, permiteObservacoes);
 
         if (erroValidarAtualizacaoProduto) {
             return res.status(400).json(erroValidarAtualizacaoProduto);
@@ -89,7 +89,7 @@ async function atualizarProduto(req, res) {
         const produtoAtualizado = await knex('produto').where({ id }).update({
             nome, 
             descricao,
-            foto,
+            imagem,
             preco,
             permite_observacoes: permiteObservacoes
         });
