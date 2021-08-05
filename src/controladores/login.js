@@ -22,7 +22,15 @@ async function loginUsuario(req, res) {
       return res.status(404).json("O usuario não foi encontrado");
     }
 
-    const restaurante = await knex("restaurante").where({usuario_id: usuario.id}).first();
+    const restaurante = await knex("restaurante")
+      .join("categoria", "categoria_id", "categoria.id")
+      .select(
+        "restaurante.*",
+        "categoria.nome as nomeCategoria",
+        "categoria.imagem as imagemCategoria"
+      )
+      .where({ usuario_id: usuario.id })
+      .first();
 
     if (!restaurante) {
       return res.status(404).json("O restaurante não foi encontrado");

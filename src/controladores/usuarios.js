@@ -96,7 +96,8 @@ async function atualizarUsuario(req, res) {
   const { usuario, restaurante: usuarioRestaurante } = req;
   let urlImagem;
   let senhaCriptografada;
-  
+  let caminhoImagem = `usuario${usuario.id}/avatar`;
+
   const {
     nome: nomeRestaurante,
     idCategoria,
@@ -150,17 +151,24 @@ async function atualizarUsuario(req, res) {
 
     if (imagem) {
       if (usuarioRestaurante.imagem) {
-        const erroAoExcluir = await excluirImagem(usuario.id);
+        const nomeDoCaminho = usuarioRestaurante.imagem.replace(
+          "https://geqwwewrwedkhywqqrco.supabase.co/storage/v1/object/public/delivery/",
+          ""
+        );
+        const erroAoExcluir = await excluirImagem(nomeDoCaminho);
 
         if (erroAoExcluir) {
           return res.status(400).json(erroAoExcluir);
         }
+
+        caminhoImagem =
+          `usuario${usuario.id}/avatar` + Math.floor(Math.random() * 10000);
       }
       const buffer = Buffer.from(imagem, "base64");
 
       const { error } = await supabase.storage
         .from(process.env.SUPABASE_BUCKET)
-        .upload(`usuario${usuario.id}/avatar`, buffer);
+        .upload(caminhoImagem, buffer);
 
       if (error) {
         return res.status(400).json("Imagem não foi atualizada.");
@@ -168,7 +176,7 @@ async function atualizarUsuario(req, res) {
 
       const { publicURL, error: errorPublicURL } = supabase.storage
         .from(process.env.SUPABASE_BUCKET)
-        .getPublicUrl(`usuario${usuario.id}/avatar`);
+        .getPublicUrl(caminhoImagem);
 
       if (errorPublicURL) {
         return res.status(400).json("Erro ao gerar url da imagem.");
@@ -187,18 +195,19 @@ async function atualizarUsuario(req, res) {
         nome,
         email,
         senha: senhaCriptografada,
-      }).returning("*");
-    
-      if(usuarioAtualizado.length === 0) {
-        const erroAoExcluir = await excluirImagem(usuario.id);
+      })
+      .returning("*");
 
-        if (erroAoExcluir) {
-          return res.status(400).json(erroAoExcluir);
-        }
-        return res.status(400).json("Erro ao atualizar usuario.");
+    if (usuarioAtualizado.length === 0) {
+      const erroAoExcluir = await excluirImagem(usuario.id);
+
+      if (erroAoExcluir) {
+        return res.status(400).json(erroAoExcluir);
       }
+      return res.status(400).json("Erro ao atualizar usuario.");
+    }
 
-      const restauranteAtualizado = await knex("restaurante")
+    const restauranteAtualizado = await knex("restaurante")
       .where({ id: usuarioRestaurante.id })
       .update({
         nome: restaurante.nome,
@@ -207,21 +216,33 @@ async function atualizarUsuario(req, res) {
         taxa_entrega: restaurante.taxaEntrega,
         tempo_entrega_minutos: restaurante.tempoEntregaEmMinutos,
         valor_minimo_pedido: restaurante.valorMinimoPedido,
-        imagem: urlImagem
-      }).returning("*");
-      
-      if(restauranteAtualizado.lenght === 0) {
-        const erroAoExcluir = await excluirImagem(usuario.id);
+        imagem: urlImagem,
+      });
 
-        if (erroAoExcluir) {
-          return res.status(400).json(erroAoExcluir);
-        }
-        return res.status(400).json("Erro ao atualizar restaurante.");
+    if (!restauranteAtualizado) {
+      const erroAoExcluir = await excluirImagem(usuario.id);
+
+      if (erroAoExcluir) {
+        return res.status(400).json(erroAoExcluir);
       }
+      return res.status(400).json("Erro ao atualizar restaurante.");
+    }
 
-      const {senha: _, ...dadosUsuario} = usuarioAtualizado[0]
-    
-      return res.status(200).json({usuario: dadosUsuario, restaurante: restauranteAtualizado[0]});
+    const restauranteECategoria = await knex("restaurante")
+    .join("categoria", "categoria_id", "categoria.id")
+    .select(
+      "restaurante.*",
+      "categoria.nome as nomeCategoria",
+      "categoria.imagem as imagemCategoria"
+    )
+    .where({ usuario_id: usuario.id })
+    .first();
+
+    const { senha: _, ...dadosUsuario } = usuarioAtualizado[0];
+
+    return res
+      .status(200)
+      .json({ usuario: dadosUsuario, restaurante: restauranteECategoria });
   } catch (error) {
     return res.status(400).json(error.message);
   }
