@@ -38,14 +38,14 @@ CREATE TABLE produto (
 
 INSERT INTO categoria (nome, imagem)
 VALUES
-('Diversos', 'https://s2.best-wallpaper.net/wallpaper/2560x1600/1908/Many-kinds-of-food-meat-tomatoes-pie_2560x1600.jpg'),
+('Diversos', 'https://blog.goomer.com.br/wp-content/uploads/2020/11/goomer-pratos-do-dia-cardapio-restaurante-como-montar-780x450.jpg'),
 ('Lanches', 'https://images.pexels.com/photos/4109139/pexels-photo-4109139.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'),
-('Carnes', 'https://images.pexels.com/photos/3535383/pexels-photo-3535383.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'),
-('Massas', 'https://images.pexels.com/photos/5507643/pexels-photo-5507643.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260'),
+('Carnes', 'https://blog.santamassa.com.br/wp-content/uploads/2018/10/247730-top-8-melhores-tipos-de-carne-para-churrasco-1280x720.jpg'),
+('Massas', 'https://st3.depositphotos.com/8005734/37747/i/1600/depositphotos_377471546-stock-photo-table-italian-meals-plates-pizza.jpg'),
 ('Pizzas', 'https://www.verangola.net/va/images/cms-image-000012618.jpg'),
 ('Japonesa', 'https://images.pexels.com/photos/2323398/pexels-photo-2323398.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'),
-('Chinesa', 'https://images.pexels.com/photos/9031956/pexels-photo-9031956.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'),
-('Mexicano', 'https://images.pexels.com/photos/8448320/pexels-photo-8448320.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'),
+('Chinesa', 'https://media.istockphoto.com/photos/chinese-food-blank-background-picture-id545455948?k=6&m=545455948&s=612x612&w=0&h=mtkFa4qU1yLPJF7LA0kr5mSNXOxyy468GfMD42SONEI='),
+('Mexicano', 'https://meubistro.com/blog/wp-content/uploads/2019/07/comida-mexicana.jpg'),
 ('Brasileira', 'https://jeffersondealmeida.com.br/wp-content/uploads/2015/06/feijoada.jpeg'),
-('Italiana', 'https://blog.duogourmet.com.br/wp-content/uploads/2019/12/Culin%C3%A1ria-italiana-no-Brasil-scaled.jpg'),
-('Árabe', 'https://revistadeguste.com/wp-content/uploads/2021/01/SALAMALEICOJAN21_1.jpg');
+('Italiana', 'https://viagemegastronomia.cnnbrasil.com.br/wp-content/uploads/sites/5/2021/03/delivery-comida-italiana.jpg?w=800'),
+('Árabe', 'https://cursosemgeral.com.br/uploads/_thumb/cedoc_doc_16243/img16243_i032vhsv9gddmjiafqvwxcqoyeqe87eiwxn5e0os3rn7o40620sj5b9zxfrclfkiif87hbiuuj3l0l74734jygdh7h9rpj420l4a.jpg');
