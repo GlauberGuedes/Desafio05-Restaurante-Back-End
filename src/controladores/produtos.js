@@ -2,6 +2,8 @@ const knex = require("../conexao");
 const supabase = require('../supabase');
 const validacaoCadastroProduto = require("../validacoes/validacaoCadastroProduto");
 const validacaoAtualizacaoProduto = require("../validacoes/validacaoAtualizacaoProduto");
+const excluirImagem = require("../utils/excluirImagem");
+const cadastrarImagem = require("../utils/cadastrarImagem");
 
 async function listarProdutos(req, res) {
     const { restaurante } = req;
@@ -96,7 +98,9 @@ async function atualizarProduto(req, res) {
     const { restaurante } = req;
     const { id } = req.params;
     const { nome, descricao, imagem, preco, permiteObservacoes } = req.body;
-
+    let urlImagem;
+    let nomeDaImagem = `restaurante${restaurante.id}/${nome.replace(/\s/g, '')}`;
+    
     try {
         const produtoEncontrado = await knex('produto').where({ id, restaurante_id: restaurante.id }).first();
 
@@ -110,15 +114,46 @@ async function atualizarProduto(req, res) {
             return res.status(400).json(erroValidarAtualizacaoProduto);
         }
 
+        if (imagem) {
+            if (produtoEncontrado.imagem) {
+              const nomeDaImagemDB = produtoEncontrado.imagem.replace(
+                `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/`,
+                ""
+              );
+              const erroAoExcluir = await excluirImagem(nomeDaImagemDB);
+      
+              if (erroAoExcluir) {
+                return res.status(400).json(erroAoExcluir);
+              }
+      
+              nomeDaImagem =
+              `restaurante${restaurante.id}/${nome.replace(/\s/g, '')}` + Math.floor(Math.random() * 10000);
+            }
+            const buffer = Buffer.from(imagem, 'base64');
+      
+            const imagemCadastrada = await cadastrarImagem(nomeDaImagem, buffer);
+      
+            if (imagemCadastrada.erro) {
+              return res.status(400).json(imagemCadastrada.erro);
+            }
+      
+            urlImagem = imagemCadastrada.url;
+          }
+
         const produtoAtualizado = await knex('produto').where({ id }).update({
             nome, 
             descricao,
-            imagem,
+            imagem: urlImagem,
             preco,
             permite_observacoes: permiteObservacoes
         });
 
         if (!produtoAtualizado) {
+            const erroAoExcluir = await excluirImagem(nomeDaImagem);
+
+            if (erroAoExcluir) {
+                return res.status(400).json(erroAoExcluir);
+            }
             return res.status(400).json('O produto não foi atualizado.');
         }
 
