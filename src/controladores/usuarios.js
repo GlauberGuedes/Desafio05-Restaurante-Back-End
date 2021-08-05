@@ -152,7 +152,7 @@ async function atualizarUsuario(req, res) {
     if (imagem) {
       if (usuarioRestaurante.imagem) {
         const nomeDoCaminho = usuarioRestaurante.imagem.replace(
-          "https://geqwwewrwedkhywqqrco.supabase.co/storage/v1/object/public/delivery/",
+          `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/`,
           ""
         );
         const erroAoExcluir = await excluirImagem(nomeDoCaminho);
@@ -228,7 +228,16 @@ async function atualizarUsuario(req, res) {
       return res.status(400).json("Erro ao atualizar restaurante.");
     }
 
-    const restauranteECategoria = await knex("restaurante")
+    return res.status(200).json("Usuário atualizado com sucesso.");
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
+}
+
+async function obterUsuario(req, res) {
+  const { usuario } = req;
+
+  const dadosRestaurante = await knex("restaurante")
     .join("categoria", "categoria_id", "categoria.id")
     .select(
       "restaurante.*",
@@ -238,14 +247,11 @@ async function atualizarUsuario(req, res) {
     .where({ usuario_id: usuario.id })
     .first();
 
-    const { senha: _, ...dadosUsuario } = usuarioAtualizado[0];
-
-    return res
-      .status(200)
-      .json({ usuario: dadosUsuario, restaurante: restauranteECategoria });
-  } catch (error) {
-    return res.status(400).json(error.message);
+  if (dadosRestaurante.length === 0) {
+    return res.status(400).json("Restaurante não foi encontrado.");
   }
+
+  return res.json({ usuario, restaurante: dadosRestaurante });
 }
 
-module.exports = { cadastrarUsuario, atualizarUsuario };
+module.exports = { cadastrarUsuario, atualizarUsuario, obterUsuario };
