@@ -2,7 +2,6 @@ const knex = require("../conexao");
 const validarUsuario = require("../validacoes/validacaoCadastroUsuario");
 const validarAtualizacaoUsuario = require("../validacoes/validacaoAtualizacaoUsuario");
 const bcrypt = require("bcrypt");
-const supabase = require("../supabase");
 const excluirImagem = require("../utils/excluirImagem");
 const cadastrarImagem = require("../utils/cadastrarImagem");
 
