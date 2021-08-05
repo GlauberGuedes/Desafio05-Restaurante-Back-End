@@ -199,7 +199,7 @@ async function atualizarUsuario(req, res) {
       .returning("*");
 
     if (usuarioAtualizado.length === 0) {
-      const erroAoExcluir = await excluirImagem(usuario.id);
+      const erroAoExcluir = await excluirImagem(caminhoImagem);
 
       if (erroAoExcluir) {
         return res.status(400).json(erroAoExcluir);
@@ -220,7 +220,7 @@ async function atualizarUsuario(req, res) {
       });
 
     if (!restauranteAtualizado) {
-      const erroAoExcluir = await excluirImagem(usuario.id);
+      const erroAoExcluir = await excluirImagem(caminhoImagem);
 
       if (erroAoExcluir) {
         return res.status(400).json(erroAoExcluir);
