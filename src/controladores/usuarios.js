@@ -4,6 +4,7 @@ const validarAtualizacaoUsuario = require("../validacoes/validacaoAtualizacaoUsu
 const bcrypt = require("bcrypt");
 const excluirImagem = require("../utils/excluirImagem");
 const cadastrarImagem = require("../utils/cadastrarImagem");
+const obterNomeDaImagem = require("../utils/obterNomeDaImagem");
 
 async function cadastrarUsuario(req, res) {
   const { nome, email, senha, restaurante } = req.body;
@@ -151,10 +152,9 @@ async function atualizarUsuario(req, res) {
 
     if (imagem) {
       if (usuarioRestaurante.imagem) {
-        const nomeDaImagemDB = usuarioRestaurante.imagem.replace(
-          `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/`,
-          ""
-        );
+
+        const nomeDaImagemDB = obterNomeDaImagem(usuarioRestaurante.imagem);
+        
         const erroAoExcluir = await excluirImagem(nomeDaImagemDB);
 
         if (erroAoExcluir) {

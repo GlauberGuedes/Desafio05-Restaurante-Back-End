@@ -3,6 +3,7 @@ const supabase = require("../supabase");
 const validacaoCadastroProduto = require("../validacoes/validacaoCadastroProduto");
 const validacaoAtualizacaoProduto = require("../validacoes/validacaoAtualizacaoProduto");
 const excluirImagem = require("../utils/excluirImagem");
+const obterNomeDaImagem = require("../utils/obterNomeDaImagem");
 
 async function listarProdutos(req, res) {
   const { restaurante } = req;
@@ -175,10 +176,8 @@ async function excluirProduto(req, res) {
         .json("Não é permitido a exclusão de produtos ativos.");
     }
 
-    const nomeDaImagemDB = produto.imagem.replace(
-      `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/`,
-      ""
-    );
+    const nomeDaImagemDB = obterNomeDaImagem(produto.imagem);
+    
     const erroAoExcluir = await excluirImagem(nomeDaImagemDB);
 
     if (erroAoExcluir) {
