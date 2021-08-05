@@ -4,6 +4,7 @@ const validarAtualizacaoUsuario = require("../validacoes/validacaoAtualizacaoUsu
 const bcrypt = require("bcrypt");
 const supabase = require("../supabase");
 const excluirImagem = require("../utils/excluirImagem");
+const cadastrarImagem = require("../utils/cadastrarImagem");
 
 async function cadastrarUsuario(req, res) {
   const { nome, email, senha, restaurante } = req.body;
@@ -96,7 +97,7 @@ async function atualizarUsuario(req, res) {
   const { usuario, restaurante: usuarioRestaurante } = req;
   let urlImagem;
   let senhaCriptografada;
-  let caminhoImagem = `usuario${usuario.id}/avatar`;
+  let nomeDaImagem = `usuario${usuario.id}/avatar`;
 
   const {
     nome: nomeRestaurante,
@@ -151,38 +152,28 @@ async function atualizarUsuario(req, res) {
 
     if (imagem) {
       if (usuarioRestaurante.imagem) {
-        const nomeDoCaminho = usuarioRestaurante.imagem.replace(
+        const nomeDaImagemDB = usuarioRestaurante.imagem.replace(
           `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/`,
           ""
         );
-        const erroAoExcluir = await excluirImagem(nomeDoCaminho);
+        const erroAoExcluir = await excluirImagem(nomeDaImagemDB);
 
         if (erroAoExcluir) {
           return res.status(400).json(erroAoExcluir);
         }
 
-        caminhoImagem =
+        nomeDaImagem =
           `usuario${usuario.id}/avatar` + Math.floor(Math.random() * 10000);
       }
       const buffer = Buffer.from(imagem, "base64");
 
-      const { error } = await supabase.storage
-        .from(process.env.SUPABASE_BUCKET)
-        .upload(caminhoImagem, buffer);
+      const imagemCadastrada = await cadastrarImagem(nomeDaImagem, buffer);
 
-      if (error) {
-        return res.status(400).json("Imagem não foi atualizada.");
+      if(imagemCadastrada.erro) {
+        return res.status(400).json(imagemCadastrada.erro);
       }
 
-      const { publicURL, error: errorPublicURL } = supabase.storage
-        .from(process.env.SUPABASE_BUCKET)
-        .getPublicUrl(caminhoImagem);
-
-      if (errorPublicURL) {
-        return res.status(400).json("Erro ao gerar url da imagem.");
-      }
-
-      urlImagem = publicURL;
+      urlImagem = imagemCadastrada.url;
     }
 
     if (senha) {
@@ -195,11 +186,10 @@ async function atualizarUsuario(req, res) {
         nome,
         email,
         senha: senhaCriptografada,
-      })
-      .returning("*");
+      });
 
-    if (usuarioAtualizado.length === 0) {
-      const erroAoExcluir = await excluirImagem(caminhoImagem);
+    if (!usuarioAtualizado) {
+      const erroAoExcluir = await excluirImagem(nomeDaImagem);
 
       if (erroAoExcluir) {
         return res.status(400).json(erroAoExcluir);
@@ -220,7 +210,7 @@ async function atualizarUsuario(req, res) {
       });
 
     if (!restauranteAtualizado) {
-      const erroAoExcluir = await excluirImagem(caminhoImagem);
+      const erroAoExcluir = await excluirImagem(nomeDaImagem);
 
       if (erroAoExcluir) {
         return res.status(400).json(erroAoExcluir);
