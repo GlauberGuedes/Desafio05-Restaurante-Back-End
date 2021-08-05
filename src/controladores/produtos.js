@@ -49,7 +49,7 @@ async function cadastrarProduto(req, res) {
         if (nomeProdutoCadastrado.length > 0) {
             return res.status(400).json('Já existe um produto com esse nome.');
         }
-
+        
         if (imagem) {
             const buffer = Buffer.from(imagem, 'base64');
 

@@ -96,7 +96,7 @@ async function atualizarUsuario(req, res) {
   const { usuario, restaurante: usuarioRestaurante } = req;
   let urlImagem;
   let senhaCriptografada;
-
+  
   const {
     nome: nomeRestaurante,
     idCategoria,
@@ -187,9 +187,9 @@ async function atualizarUsuario(req, res) {
         nome,
         email,
         senha: senhaCriptografada,
-      });
+      }).returning("*");
     
-      if(!usuarioAtualizado) {
+      if(usuarioAtualizado.length === 0) {
         const erroAoExcluir = await excluirImagem(usuario.id);
 
         if (erroAoExcluir) {
@@ -208,9 +208,9 @@ async function atualizarUsuario(req, res) {
         tempo_entrega_minutos: restaurante.tempoEntregaEmMinutos,
         valor_minimo_pedido: restaurante.valorMinimoPedido,
         imagem: urlImagem
-      });
+      }).returning("*");
       
-      if(!restauranteAtualizado) {
+      if(restauranteAtualizado.lenght === 0) {
         const erroAoExcluir = await excluirImagem(usuario.id);
 
         if (erroAoExcluir) {
@@ -219,7 +219,9 @@ async function atualizarUsuario(req, res) {
         return res.status(400).json("Erro ao atualizar restaurante.");
       }
 
-      return res.status(200).json("Usuario atualizado");
+      const {senha: _, ...dadosUsuario} = usuarioAtualizado[0]
+    
+      return res.status(200).json({usuario: dadosUsuario, restaurante: restauranteAtualizado[0]});
   } catch (error) {
     return res.status(400).json(error.message);
   }
