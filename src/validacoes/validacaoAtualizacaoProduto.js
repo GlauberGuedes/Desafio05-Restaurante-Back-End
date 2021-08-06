@@ -34,11 +34,15 @@ function validacaoAtualizacaoProduto(
   }
 
   if (!preco) {
-    return "O campo 'preco' é obrigatório.";
+    return "O campo 'valor' é obrigatório.";
   }
 
   if (!Number(preco)) {
-    return "O campo 'preco' precisa ser preenchido com um número.";
+    return "O campo 'valor' precisa ser preenchido com um número.";
+  }
+
+  if (String(preco).includes(".")) {
+    return "O campo 'valor' precisa ser um número inteiro.";
   }
 
   if (typeof permiteObservacoes !== "boolean") {

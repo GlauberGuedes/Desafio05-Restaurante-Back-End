@@ -74,14 +74,32 @@ function validarAtualizacaoUsuario(
   if (!Number(idCategoria)) {
     return "O campo 'idCategoria' precisa ser um numero.";
   }
+  if (!taxaEntrega) {
+    return "O campo 'taxa de entrega' é obrigatório.";
+  }
   if (!Number(taxaEntrega)) {
     return "O campo 'taxa de entrega' é obrigatório e precisa ser um número inteiro.";
+  }
+  if (String(taxaEntrega).includes(".")) {
+    return "O campo 'taxa de entrega' precisa ser um número inteiro.";
+  }
+  if (!tempoEntregaEmMinutos) {
+    return "O campo 'taxa de entrega' é obrigatório.";
   }
   if (!Number(tempoEntregaEmMinutos)) {
     return "O campo 'tempo estimado de entrega' é obrigatório e precisa ser um número.";
   }
+  if (String(tempoEntregaEmMinutos).includes(".")) {
+    return "O campo 'tempo estimado de entrega' precisa ser um número inteiro.";
+  }  
+  if (!valorMinimoPedido) {
+    return "O campo 'taxa de entrega' é obrigatório.";
+  }
   if (!Number(valorMinimoPedido)) {
     return "O campo 'valor mínimo do pedido' é obrigatório e precisa ser um número inteiro.";
+  }
+  if (String(valorMinimoPedido).includes(".")) {
+    return "O campo 'valor mínimo do pedido' precisa ser um número inteiro.";
   }
 }
 
