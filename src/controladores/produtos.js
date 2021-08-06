@@ -10,7 +10,9 @@ async function listarProdutos(req, res) {
   const { restaurante } = req;
 
   try {
-    const produtos = await knex("produto").where({ restaurante_id: restaurante.id }).orderBy("id");
+    const produtos = await knex("produto")
+      .where({ restaurante_id: restaurante.id })
+      .orderBy("id");
 
     return res.status(200).json(produtos);
   } catch (error) {
@@ -23,7 +25,9 @@ async function obterProduto(req, res) {
   const { id } = req.params;
 
   try {
-    const produto = await knex("produto").where({ id, restaurante_id: restaurante.id }).first();
+    const produto = await knex("produto")
+      .where({ id, restaurante_id: restaurante.id })
+      .first();
 
     if (!produto) {
       return res.status(404).json("Produto não encontrado.");
@@ -37,7 +41,8 @@ async function obterProduto(req, res) {
 
 async function cadastrarProduto(req, res) {
   const { restaurante } = req;
-  const { nome, descricao, imagem, preco, ativo, permiteObservacoes } = req.body;
+  const { nome, descricao, imagem, preco, ativo, permiteObservacoes } =
+    req.body;
   let urlImagem;
 
   try {
@@ -54,7 +59,9 @@ async function cadastrarProduto(req, res) {
       return res.status(400).json(erroValidarCadastroProduto);
     }
 
-    const nomeProdutoCadastrado = await knex("produto").where({ restaurante_id: restaurante.id }).where("nome", "ilike", nome);
+    const nomeProdutoCadastrado = await knex("produto")
+      .where({ restaurante_id: restaurante.id })
+      .where("nome", "ilike", nome);
 
     if (nomeProdutoCadastrado.length > 0) {
       return res.status(400).json("Já existe um produto com esse nome.");
@@ -70,7 +77,9 @@ async function cadastrarProduto(req, res) {
           buffer
         );
       if (error) {
-        return res.status(400).json("A imagem do produto não pôde ser cadastrada.");
+        return res
+          .status(400)
+          .json("A imagem do produto não pôde ser cadastrada.");
       }
 
       const { publicURL, error: errorPublicUrl } = supabase.storage
@@ -106,82 +115,72 @@ async function cadastrarProduto(req, res) {
 }
 
 async function atualizarProduto(req, res) {
-    const { restaurante } = req;
-    const { id } = req.params;
-    const { nome, descricao, imagem, preco, permiteObservacoes } = req.body;
-    let urlImagem;
-    let nomeDaImagem = `restaurante${restaurante.id}/${nome.replace(/\s/g, '')}`;
-    
-    try {
-        const produtoEncontrado = await knex("produto").where({ id, restaurante_id: restaurante.id }).first();
+  const { restaurante } = req;
+  const { id } = req.params;
+  const { nome, descricao, imagem, preco, permiteObservacoes } = req.body;
+  let urlImagem;
+  let nomeDaImagem = `restaurante${restaurante.id}/${nome.replace(/\s/g, "")}`;
 
-        if (!produtoEncontrado) {
-            return res.status(404).json("Produto não encontrado.");
+  try {
+    const produtoEncontrado = await knex("produto")
+      .where({ id, restaurante_id: restaurante.id })
+      .first();
+
+    if (!produtoEncontrado) {
+      return res.status(404).json("Produto não encontrado.");
+    }
+
+    const erroValidarAtualizacaoProduto = validacaoAtualizacaoProduto(
+      nome,
+      descricao,
+      imagem,
+      preco,
+      permiteObservacoes
+    );
+
+    if (erroValidarAtualizacaoProduto) {
+      return res.status(400).json(erroValidarAtualizacaoProduto);
+    }
+
+    if (imagem) {
+      if (produtoEncontrado.imagem) {
+        const nomeDaImagemDB = obterNomeDaImagem(produtoEncontrado.imagem);
+        const erroAoExcluir = await excluirImagem(nomeDaImagemDB);
+
+        if (erroAoExcluir) {
+          return res.status(400).json(erroAoExcluir);
         }
 
-        const erroValidarAtualizacaoProduto = validacaoAtualizacaoProduto(
-            nome,
-            descricao,
-            imagem,
-            preco,
-            permiteObservacoes
-        );
-        
-        if (erroValidarAtualizacaoProduto) {
-            return res.status(400).json(erroValidarAtualizacaoProduto);
-        }
+        nomeDaImagem =
+          `restaurante${restaurante.id}/${nome.replace(/\s/g, "")}` +
+          Math.floor(Math.random() * 10000);
+      }
+      const buffer = Buffer.from(imagem, "base64");
 
-        if (imagem) {
-            if (produtoEncontrado.imagem) {
-              const nomeDaImagemDB = obterNomeDaImagem(produtoEncontrado.imagem);
-              const erroAoExcluir = await excluirImagem(nomeDaImagemDB);
-      
-              if (erroAoExcluir) {
-                return res.status(400).json(erroAoExcluir);
-              }
-      
-              nomeDaImagem =
-              `restaurante${restaurante.id}/${nome.replace(/\s/g, '')}` + Math.floor(Math.random() * 10000);
-            }
-            const buffer = Buffer.from(imagem, "base64");
-      
-            const imagemCadastrada = await cadastrarImagem(nomeDaImagem, buffer);
-      
-            if (imagemCadastrada.erro) {
-              return res.status(400).json(imagemCadastrada.erro);
-            }
-      
-            urlImagem = imagemCadastrada.url;
-          }
+      const imagemCadastrada = await cadastrarImagem(nomeDaImagem, buffer);
 
-        const produtoAtualizado = await knex('produto').where({ id }).update({
-            nome, 
-            descricao,
-            imagem: urlImagem,
-            preco,
-            permite_observacoes: permiteObservacoes
-        });
+      if (imagemCadastrada.erro) {
+        return res.status(400).json(imagemCadastrada.erro);
+      }
 
-        if (!produtoAtualizado) {
-            const erroAoExcluir = await excluirImagem(nomeDaImagem);
-
-            if (erroAoExcluir) {
-                return res.status(400).json(erroAoExcluir);
-            }
-
-            return res.status(400).json('O produto não foi atualizado.');
-        }
-    
+      urlImagem = imagemCadastrada.url;
+    }
 
     const produtoAtualizado = await knex("produto").where({ id }).update({
       nome,
       descricao,
-      imagem,
+      imagem: urlImagem,
       preco,
       permite_observacoes: permiteObservacoes,
     });
 
     if (!produtoAtualizado) {
+      const erroAoExcluir = await excluirImagem(nomeDaImagem);
+
+      if (erroAoExcluir) {
+        return res.status(400).json(erroAoExcluir);
+      }
+
       return res.status(400).json("O produto não foi atualizado.");
     }
 
@@ -196,25 +195,31 @@ async function excluirProduto(req, res) {
   const { id } = req.params;
 
   try {
-    const produto = await knex("produto").where({ id, restaurante_id: restaurante.id }).first();
+    const produto = await knex("produto")
+      .where({ id, restaurante_id: restaurante.id })
+      .first();
 
     if (produto.length === 0) {
       return res.status(404).json("Produto não encontrado.");
     }
 
     if (produto.ativo) {
-      return res.status(400).json("Não é permitido a exclusão de produtos ativos.");
+      return res
+        .status(400)
+        .json("Não é permitido a exclusão de produtos ativos.");
     }
 
     const nomeDaImagemDB = obterNomeDaImagem(produto.imagem);
-    
+
     const erroAoExcluir = await excluirImagem(nomeDaImagemDB);
 
     if (erroAoExcluir) {
       return res.status(400).json(erroAoExcluir);
     }
 
-    const produtoExcluido = await knex("produto").where({ id, restaurante_id: restaurante.id }).del();
+    const produtoExcluido = await knex("produto")
+      .where({ id, restaurante_id: restaurante.id })
+      .del();
 
     if (!produtoExcluido) {
       return res.status(400).json("O produto não foi excluído.");
@@ -231,7 +236,9 @@ async function ativarProduto(req, res) {
   const { id } = req.params;
 
   try {
-    const produto = await knex("produto").where({ id, restaurante_id: restaurante.id }).first();
+    const produto = await knex("produto")
+      .where({ id, restaurante_id: restaurante.id })
+      .first();
 
     if (!produto) {
       return res.status(404).json("Produto não encontrado.");
