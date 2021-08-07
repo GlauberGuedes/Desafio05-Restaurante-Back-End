@@ -1,12 +1,60 @@
-const yup = require('./configuracao');
+function validacaoCadastroProduto(
+  nome,
+  descricao,
+  imagem,
+  preco,
+  ativo,
+  permiteObservacoes
+) {
+  if (!nome) {
+    return "O campo 'nome' é obrigatório.";
+  }
 
-const validacaoCadastroProduto = yup.object().shape({
-  nome: yup.string().strict().required().max(50).trim(),
-  descricao: yup.string().max(80),
-  foto: yup.string(),
-  preco: yup.number().required(),
-  ativo: yup.boolean().required(),
-  permiteObservacoes: yup.boolean().required()
-});
+  if (typeof nome !== "string") {
+    return "O campo 'nome' precisa ser preenchido com um texto.";
+  }
+
+  if (!nome.trim()) {
+    return "O campo 'nome' não pode ser espaços vazios.";
+  }
+  if (nome.length > 50) {
+    return "O campo 'nome' deve conter, no máximo, 50 caracteres.";
+  }
+
+  if (descricao) {
+    if (typeof descricao !== "string") {
+      return "O campo 'descricao' precisa ser preenchido com um texto.";
+    }
+    if (descricao.length > 80) {
+      return "O campo 'descricao' deve conter, no máximo, 80 caracteres.";
+    }
+  }
+
+  if (imagem) {
+    if (typeof imagem !== "string") {
+      return "O campo 'imagem' precisa ser preenchido com um texto.";
+    }
+  }
+
+  if (!preco) {
+    return "O campo 'valor' é obrigatório.";
+  }
+
+  if (!Number(preco)) {
+    return "O campo 'valor' precisa ser preenchido com um número.";
+  }
+
+  if (String(preco).includes(".")) {
+    return "O campo 'valor' precisa ser um número inteiro.";
+  }
+
+  if (typeof ativo !== "boolean") {
+    return "O campo 'ativo' precisa ser preenchido com um valor booleano(true/false).";
+  }
+
+  if (typeof permiteObservacoes !== "boolean") {
+    return "O campo 'permiteObservacoes' precisa ser preenchido com um valor booleano(true/false).";
+  }
+}
 
 module.exports = validacaoCadastroProduto;

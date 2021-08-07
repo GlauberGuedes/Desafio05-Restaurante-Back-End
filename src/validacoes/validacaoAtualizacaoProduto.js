@@ -1,11 +1,53 @@
-const yup = require('./configuracao');
+function validacaoAtualizacaoProduto(
+  nome,
+  descricao,
+  imagem,
+  preco,
+  permiteObservacoes
+) {
+  if (!nome) {
+    return "O campo 'nome' é obrigatório.";
+  }
+  if (typeof nome !== "string") {
+    return "O campo 'nome' precisa ser preenchido com um texto.";
+  }
+  if (nome.length > 50) {
+    return "O campo 'nome' deve conter, no máximo, 50 caracteres.";
+  }
+  if (!nome.trim()) {
+    return "O campo 'nome' não pode ser espaços vazios.";
+  }
 
-const validacaoAtualizacaoProduto = yup.object().shape({
-  nome: yup.string().strict().max(50).trim(),
-  descricao: yup.string().strict().max(80).trim(),
-  foto: yup.string().strict().trim(),
-  preco: yup.number(),
-  permiteObservacoes: yup.boolean()
-});
+  if (descricao) {
+    if (typeof descricao !== "string") {
+      return "O campo 'descricao' precisa ser preenchido com um texto.";
+    }
+    if (descricao.length > 80) {
+      return "O campo 'descricao' deve conter, no máximo, 80 caracteres.";
+    }
+  }
+
+  if (imagem) {
+    if (typeof imagem !== "string") {
+      return "O campo 'imagem' precisa ser preenchido com um texto.";
+    }
+  }
+
+  if (!preco) {
+    return "O campo 'valor' é obrigatório.";
+  }
+
+  if (!Number(preco)) {
+    return "O campo 'valor' precisa ser preenchido com um número.";
+  }
+
+  if (String(preco).includes(".")) {
+    return "O campo 'valor' precisa ser um número inteiro.";
+  }
+
+  if (typeof permiteObservacoes !== "boolean") {
+    return "O campo 'permiteObservacoes' precisa ser preenchido com um valor booleano(true/false).";
+  }
+}
 
 module.exports = validacaoAtualizacaoProduto;

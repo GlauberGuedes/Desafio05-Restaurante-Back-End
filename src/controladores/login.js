@@ -1,19 +1,39 @@
 const knex = require("../conexao");
 const bcrypt = require("bcrypt");
-const validacaoLoginUsuario = require("../validacoes/validacaoLoginUsuario");
+const validarLogin = require("../validacoes/validacaoLoginUsuario");
 const senhaHash = require("../senhaHash");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 async function loginUsuario(req, res) {
   const { email, senha } = req.body;
 
   try {
-    await validacaoLoginUsuario.validate(req.body);
+    const erroValidacaoLogin = validarLogin(email, senha);
 
-    const usuario = await knex("usuario").where("email", "ilike", email).first();
+    if (erroValidacaoLogin) {
+      return res.status(400).json(erroValidacaoLogin);
+    }
+
+    const usuario = await knex("usuario")
+      .where("email", "ilike", email)
+      .first();
 
     if (!usuario) {
       return res.status(404).json("O usuario não foi encontrado");
+    }
+
+    const restaurante = await knex("restaurante")
+      .join("categoria", "categoria_id", "categoria.id")
+      .select(
+        "restaurante.*",
+        "categoria.nome as nomeCategoria",
+        "categoria.imagem as imagemCategoria"
+      )
+      .where({ usuario_id: usuario.id })
+      .first();
+
+    if (!restaurante) {
+      return res.status(404).json("O restaurante não foi encontrado");
     }
 
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
@@ -26,7 +46,7 @@ async function loginUsuario(req, res) {
 
     const { senha: _, ...dadosUsuario } = usuario;
 
-    return res.status(200).json({ usuario: dadosUsuario, token });
+    return res.status(200).json({ usuario: dadosUsuario, restaurante, token });
   } catch (error) {
     return res.status(400).json(error.message);
   }
