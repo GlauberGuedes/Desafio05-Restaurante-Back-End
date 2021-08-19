@@ -73,7 +73,7 @@ async function cadastrarProduto(req, res) {
       const { error } = await supabase.storage
         .from(process.env.SUPABASE_BUCKET)
         .upload(
-          `restaurante${restaurante.id}/${nome.replace(/\s/g, "")}`,
+          `restaurante${restaurante.id}/${id}`,
           buffer
         );
       if (error) {
@@ -85,7 +85,7 @@ async function cadastrarProduto(req, res) {
       const { publicURL, error: errorPublicUrl } = supabase.storage
         .from(process.env.SUPABASE_BUCKET)
         .getPublicUrl(
-          `restaurante${restaurante.id}/${nome.replace(/\s/g, "")}`
+          `restaurante${restaurante.id}/${id}`
         );
       if (errorPublicUrl) {
         return res.status(400).json(errorPublicUrl.message);
@@ -119,8 +119,8 @@ async function atualizarProduto(req, res) {
   const { id } = req.params;
   const { nome, descricao, imagem, preco, permiteObservacoes } = req.body;
   let urlImagem;
-  let nomeDaImagem = `restaurante${restaurante.id}/${nome.replace(/\s/g, "")}`;
-
+  let nomeDaImagem = `restaurante${restaurante.id}/${id}`;
+  
   try {
     const produtoEncontrado = await knex("produto")
       .where({ id, restaurante_id: restaurante.id })
@@ -152,7 +152,7 @@ async function atualizarProduto(req, res) {
         }
 
         nomeDaImagem =
-          `restaurante${restaurante.id}/${nome.replace(/\s/g, "")}` +
+          `restaurante${restaurante.id}/${id}` +
           Math.floor(Math.random() * 10000);
       }
       const buffer = Buffer.from(imagem, "base64");
