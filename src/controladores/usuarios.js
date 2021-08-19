@@ -236,7 +236,7 @@ async function obterUsuario(req, res) {
     .where({ usuario_id: usuario.id })
     .first();
 
-  if (dadosRestaurante.length === 0) {
+  if (!dadosRestaurante) {
     return res.status(400).json("Restaurante não foi encontrado.");
   }
 
