@@ -73,7 +73,7 @@ async function cadastrarProduto(req, res) {
       const { error } = await supabase.storage
         .from(process.env.SUPABASE_BUCKET)
         .upload(
-          `restaurante${restaurante.id}/${id}`,
+          `restaurante${restaurante.id}/${nome.replace(/\s/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, "")}`,
           buffer
         );
       if (error) {
@@ -85,7 +85,7 @@ async function cadastrarProduto(req, res) {
       const { publicURL, error: errorPublicUrl } = supabase.storage
         .from(process.env.SUPABASE_BUCKET)
         .getPublicUrl(
-          `restaurante${restaurante.id}/${id}`
+          `restaurante${restaurante.id}/${nome.replace(/\s/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, "")}`
         );
       if (errorPublicUrl) {
         return res.status(400).json(errorPublicUrl.message);
