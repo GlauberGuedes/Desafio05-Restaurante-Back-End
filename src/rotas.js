@@ -26,5 +26,6 @@ rotas.post('/produtos/:id/ativar', produtos.ativarProduto);
 rotas.post('/produtos/:id/desativar', produtos.desativarProduto);
 rotas.get('/pedidos', pedidos.listarPedidos);
 rotas.post('/entregas/:id/ativar', pedidos.ativarSaidaParaEntrega);
+rotas.post('/entregas/:id/desativar', pedidos.desativarSaidaParaEntrega); 
 
 module.exports = rotas;
