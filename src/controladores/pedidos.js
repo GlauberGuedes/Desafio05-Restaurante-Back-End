@@ -41,6 +41,36 @@ async function listarPedidos(req, res) {
     }
 }
 
+async function ativarSaidaParaEntrega(req, res) {
+    const { restaurante } = req;
+    const { id } = req.params;
+
+    try {
+        const pedido = await knex("pedido")
+            .where({ id, restaurante_id: restaurante.id })
+            .first();
+        
+        if (!pedido) {
+            return res.status(404).json("Pedido não encontrado.");
+        }
+
+        const saidaAtivada = await knex("pedido")
+            .where({ id })
+            .update({
+                saiu_para_entrega: true,
+            });
+        
+        if (saidaAtivada.length === 0) {
+            return res.status(400).json("Erro ao ativar a saída do pedido.");
+        }
+
+        return res.status(200).json();
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 module.exports = {
-    listarPedidos
+    listarPedidos,
+    ativarSaidaParaEntrega
 }
