@@ -4,6 +4,7 @@ const usuario = require('./controladores/usuarios');
 const login = require('./controladores/login');
 const categorias = require('./controladores/categorias');
 const produtos = require('./controladores/produtos');
+const pedidos = require('./controladores/pedidos');
 const verificarToken = require('./filtros/verificarToken');
 
 rotas.post('/usuarios', usuario.cadastrarUsuario);
@@ -23,5 +24,6 @@ rotas.put('/produtos/:id', produtos.atualizarProduto);
 rotas.delete('/produtos/:id', produtos.excluirProduto);
 rotas.post('/produtos/:id/ativar', produtos.ativarProduto);
 rotas.post('/produtos/:id/desativar', produtos.desativarProduto);
+rotas.get('/pedidos', pedidos.listarPedidos);
 
 module.exports = rotas;
