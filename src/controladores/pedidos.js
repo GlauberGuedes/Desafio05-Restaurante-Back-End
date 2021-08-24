@@ -70,7 +70,37 @@ async function ativarSaidaParaEntrega(req, res) {
     }
 }
 
+async function desativarSaidaParaEntrega(req, res) {
+    const { restaurante } = req;
+    const { id } = req.params;
+
+    try {
+        const pedido = await knex("pedido")
+            .where({ id, restaurante_id: restaurante.id })
+            .first();
+        
+        if (!pedido) {
+            return res.status(404).json("Pedido não encontrado.");
+        }
+
+        const saidaDesativada = await knex("pedido")
+            .where({ id })
+            .update({
+                saiu_para_entrega: false,
+            });
+        
+        if (saidaDesativada.length === 0) {
+            return res.status(400).json("Erro ao desativar a saída do pedido.");
+        }
+
+        return res.status(200).json();
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 module.exports = {
     listarPedidos,
-    ativarSaidaParaEntrega
+    ativarSaidaParaEntrega,
+    desativarSaidaParaEntrega
 }
