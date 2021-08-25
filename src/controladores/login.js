@@ -1,7 +1,6 @@
 const knex = require("../conexao");
 const bcrypt = require("bcrypt");
 const validarLogin = require("../validacoes/validacaoLoginUsuario");
-const senhaHash = require("../senhaHash");
 const jwt = require("jsonwebtoken");
 
 async function loginUsuario(req, res) {
@@ -42,7 +41,7 @@ async function loginUsuario(req, res) {
       return res.status(400).json("Email e senha não confere");
     }
 
-    const token = jwt.sign({ id: usuario.id }, senhaHash);
+    const token = jwt.sign({ id: usuario.id }, process.env.SENHA_HASH);
 
     const { senha: _, ...dadosUsuario } = usuario;
 

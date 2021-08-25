@@ -1,6 +1,6 @@
 const knex = require("../conexao");
 const jwt = require("jsonwebtoken");
-const senhaHash = require("../senhaHash");
+
 
 const verificarToken = async (req, res, next) => {
   const { authorization } = req.headers;
@@ -12,7 +12,7 @@ const verificarToken = async (req, res, next) => {
   try {
     const token = authorization.replace("Bearer ", "").trim();
 
-    const { id } = jwt.verify(token, senhaHash);
+    const { id } = jwt.verify(token, process.env.SENHA_HASH);
 
     const usuarioExiste = await knex("usuario").where({ id }).first();
 
