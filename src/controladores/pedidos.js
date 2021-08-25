@@ -28,6 +28,7 @@ async function listarPedidos(req, res) {
             .join("pedido", "itens_do_pedido.pedido_id", "pedido.id")
             .select(
                 "produto.nome as nomeProduto",
+                "produto.imagem as imagemProduto",
                 "itens_do_pedido.subtotal as valor",
                 "itens_do_pedido.quantidade as quantidade"
             ).where("itens_do_pedido.pedido_id", pedido.idPedido);
