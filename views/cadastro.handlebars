@@ -6,33 +6,36 @@
   <style>
     h1{
       text-align: center;
-    }
-    .conteudo {
-      width: 400px;
-      margin: 0 auto;
-      background-color: aquamarine;
-      text-align: center;
-      border-radius: 10px;
-      box-shadow: 0 0 3px black;
-      display: flex;
-      flex-direction: column;
-    }
-    p {
-      text-align: center;
       margin-bottom: 20px;
     }
-    a {
+
+    .texto {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .link {
       all: unset;
-      color: rgb(214, 4, 4);
-      margin-bottom: 20px;
+      background-color: #d13201;
+      padding: 6px 14px;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      margin: 0 auto;
+      width: 200px;
+    }
+
+    a{
+      text-decoration: unset;
+      font-weight: bold;
+      color: white;
     }
   </style>
   <title>Email</title>
 </head>
 <body>
-  <h1>Olá {{ nome }}!</h1>
-  <div class="conteudo">
-    <p>Esqueceu sua senha?</p>
+  <h1>Olá, {{ nome }}!</h1>
+  <p class="texto">Clique no botão abaixo pra alterar sua senha de acesso ao site Cubos Food.</p>
+  <div class="link">
     <a href="http://localhost:3000/redefinir-senha/{{token}}" target="_blank">Click aqui para recuperar</a>
   </div>
 </body>
