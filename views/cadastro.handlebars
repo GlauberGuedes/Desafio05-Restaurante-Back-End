@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    h1{
+      text-align: center;
+    }
+    .conteudo {
+      width: 400px;
+      margin: 0 auto;
+      background-color: aquamarine;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 0 3px black;
+      display: flex;
+      flex-direction: column;
+    }
+    p {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    a {
+      all: unset;
+      color: rgb(214, 4, 4);
+      margin-bottom: 20px;
+    }
+  </style>
+  <title>Email</title>
+</head>
+<body>
+  <h1>Olá {{ nome }}!</h1>
+  <div class="conteudo">
+    <p>Esqueceu sua senha?</p>
+    <a href="http://localhost:3000/redefinir-senha/{{token}}" target="_blank">Click aqui para recuperar</a>
+  </div>
+</body>
+</html>
