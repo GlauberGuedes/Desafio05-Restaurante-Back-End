@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const excluirImagem = require("../utils/excluirImagem");
 const cadastrarImagem = require("../utils/cadastrarImagem");
 const obterNomeDaImagem = require("../utils/obterNomeDaImagem");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("../../nodemailer");
 
 async function cadastrarUsuario(req, res) {
   const { nome, email, senha, restaurante } = req.body;
@@ -243,4 +245,75 @@ async function obterUsuario(req, res) {
   return res.json({ usuario, restaurante: dadosRestaurante });
 }
 
-module.exports = { cadastrarUsuario, atualizarUsuario, obterUsuario };
+async function solicitarAlteracaoSenha(req, res) {
+  const { email } = req.body;
+
+  try {
+    const emailCadastrado = await knex("usuario").where({ email }).first();
+
+    if(!emailCadastrado) {
+      return res.status(404).json("Email não cadastrado.")
+    }
+
+    const token = jwt.sign({ email }, process.env.SENHA_HASH);
+
+    const solicitacaoAlteracao = await knex("recuperar_senha").insert({email, token}).returning("*");
+
+    if(solicitacaoAlteracao.length === 0) {
+      return res.status(400).json("Erro ao cadastrar a recuperação de senha.");
+    }
+
+    const dadosEnvio = {
+      from: "CubosFood <nao-responder@cubosfood.com.br>",
+      to: email,
+      subject: "Recuperação de senha",
+      template: 'cadastro',
+      context: {
+        nome: emailCadastrado.nome,
+        token
+      }
+    };
+
+    nodemailer.sendMail(dadosEnvio);
+
+    res.status(200).json("Enviado email para recuperação de senha.");
+
+  }catch(error) {
+    return res.status(400).json(error.message);
+  }
+}
+
+async function redefinirSenha (req,res) {
+  const { senha, token } = req.body;
+
+  try{
+    const { email } = jwt.verify(token, process.env.SENHA_HASH);
+
+    const SolicitacaoRedefinirSenha = await knex("recuperar_senha").where({ email }).first();
+
+    if(!SolicitacaoRedefinirSenha) {
+      return res.status(404).json("Não foi encontrada nenhuma solicitação de recuperação de senha desse email.");
+    }
+
+    const senhaCriptografada = await bcrypt.hash(senha, 10);
+
+    const usuarioAtualizado = await knex("usuario").update({senha: senhaCriptografada}).where({email});
+
+    if(!usuarioAtualizado) {
+      return res.status(400).json("Erro ao atualizar a senha.");
+    }
+
+    const deletarSolicitacao = await knex("recuperar_senha").del().where({email});
+
+    if(!deletarSolicitacao) {
+      return res.status(400).json("Erro ao limpar solicitação.");
+    }
+
+    return res.json("Senha redefinida.");
+
+  }catch(error) {
+    return res.status(400).json(error.message);
+  }
+}
+
+module.exports = { cadastrarUsuario, atualizarUsuario, obterUsuario, solicitarAlteracaoSenha, redefinirSenha };
