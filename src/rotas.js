@@ -9,6 +9,8 @@ const verificarToken = require('./filtros/verificarToken');
 
 rotas.post('/usuarios', usuario.cadastrarUsuario);
 rotas.post('/login', login.loginUsuario);
+rotas.post('/solicitar-alteracao', usuario.solicitarAlteracaoSenha);
+rotas.post('/redefinir-senha', usuario.redefinirSenha);
 
 rotas.get('/categorias', categorias.listaDeCategoria);
 
