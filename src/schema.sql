@@ -36,6 +36,12 @@ CREATE TABLE produto (
   	permite_observacoes boolean NOT NULL DEFAULT false
 );
 
+CREATE TABLE recuperar_senha (
+	id SERIAL NOT NULL PRIMARY KEY,
+  	email TEXT NOT NULL,
+  	token TEXT NOT NULL
+);
+
 INSERT INTO categoria (nome, imagem)
 VALUES
 ('Diversos', 'https://blog.goomer.com.br/wp-content/uploads/2020/11/goomer-pratos-do-dia-cardapio-restaurante-como-montar-780x450.jpg'),
